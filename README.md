@@ -9,8 +9,9 @@ Requires Python 3.6 or later. In case you need to support Python 2.7 try using
 
 When `maybe_awaitable` is a coroutine or other awaitable object it is awaited,
 then `followup_func` is called with its result. Returns the new coroutine
-object for `followup_func`'s result.  Otherwise passes `maybe_awaitable` to
-`followup_func` and returns its result immediately.
+object for `followup_func`'s result.  When `maybe_awaitable` is not awatiable
+(is a result of synchronous function) it's passed to `followup_func` and its
+result is returned immediately.
 
 ### `@inline_callbacks` decorator
 
