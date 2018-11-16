@@ -8,7 +8,9 @@ from async_ready import maybe_await, inline_callbacks
 def asyncio_run(coro):
     # Backport of asyncio.run() to Python 3.6
     loop = asyncio.new_event_loop()
-    return loop.run_until_complete(coro)
+    result = loop.run_until_complete(coro)
+    loop.close()
+    return result
 
 
 def sync_func(arg):
