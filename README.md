@@ -5,6 +5,16 @@ Requires Python 3.6 or later. In case you need to support Python 2.7 try using
 
 ## Documentation
 
+### `await maybe_await(maybe_awaitable)`
+
+Converts `maybe_awaitable` to awaitable if it's not already.  This allows you
+to accept both ordinary and coroutine functions and with the same code:
+
+```python
+async def library_function(maybe_coroutine_func):
+    result = await maybe_await(maybe_coroutine_func())
+```
+
 ### `maybe_await(maybe_awaitable).then(followup_func)`
 
 When `maybe_awaitable` is a coroutine or other awaitable object it is awaited,

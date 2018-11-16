@@ -19,6 +19,13 @@ class maybe_await:
     def __init__(self, maybe_awaitable):
         self.maybe_awaitable = maybe_awaitable
 
+    def __await__(self):
+        if inspect.isawaitable(self.maybe_awaitable):
+            result = yield from self.maybe_awaitable.__await__()
+        else:
+            result = self.maybe_awaitable
+        return result
+
     def then(self, func):
         if inspect.isawaitable(self.maybe_awaitable):
             return self._async_then(func)

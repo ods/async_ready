@@ -26,7 +26,11 @@ async def async_followup(arg):
     return arg + 23
 
 
-def maybe_await_usage(arg, func, followup):
+async def maybe_await_usage(arg, func):
+    maybe_awaitable = func(arg)
+    return await maybe_await(maybe_awaitable)
+
+def maybe_await_then_usage(arg, func, followup):
     maybe_awaitable = func(arg)
     return maybe_await(maybe_awaitable).then(followup)
 
@@ -41,24 +45,35 @@ def inline_callbacks_usage_yield_followup(arg, func, followup):
     result = yield followup(intermediate)
     return result
 
-
 def test_maybe_await_sync():
-    result = maybe_await_usage(12, sync_func, sync_followup)
-    assert result == 35
+    awaitable = maybe_await_usage(12, sync_func)
+    assert isawaitable(awaitable)
+    result = asyncio_run(awaitable)
+    assert result == 12
 
 def test_maybe_await_async():
-    awaitable = maybe_await_usage(12, async_func, sync_followup)
+    awaitable = maybe_await_usage(12, async_func)
+    assert isawaitable(awaitable)
+    result = asyncio_run(awaitable)
+    assert result == 12
+
+def test_maybe_await_then_sync():
+    result = maybe_await_then_usage(12, sync_func, sync_followup)
+    assert result == 35
+
+def test_maybe_await_then_async():
+    awaitable = maybe_await_then_usage(12, async_func, sync_followup)
     assert isawaitable(awaitable)
     result = asyncio_run(awaitable)
     assert result == 35
 
-def test_maybe_await_sync_followup_is_not_awaited():
-    result = maybe_await_usage(12, sync_func, async_followup)
+def test_maybe_await_then_sync_followup_is_not_awaited():
+    result = maybe_await_then_usage(12, sync_func, async_followup)
     assert isawaitable(result)
     asyncio_run(result)  # To avoid warning
 
-def test_maybe_await_async_followup_is_not_awaited():
-    awaitable = maybe_await_usage(12, async_func, async_followup)
+def test_maybe_await_then_async_followup_is_not_awaited():
+    awaitable = maybe_await_then_usage(12, async_func, async_followup)
     assert isawaitable(awaitable)
     result = asyncio_run(awaitable)
     assert isawaitable(result)
